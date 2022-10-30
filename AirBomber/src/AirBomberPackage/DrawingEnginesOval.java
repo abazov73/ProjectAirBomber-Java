@@ -4,20 +4,20 @@
  */
 package AirBomberPackage;
 
-import java.awt.Graphics2D;
-import java.awt.Color;
+import java.awt.*;
 
 /**
  *
  * @author Андрей
  */
-public class DrawingEngines implements IDrawingObjectDop {
+public class DrawingEnginesOval implements IDrawingObjectDop {
     private Engines engines = null;
     private int numberOfEngines;
     @Override
     public int getNumberOfEngines() {
         return numberOfEngines;
     }
+
     @Override
     public void setNumberOfEngines(int numberOfEngines) {
         if (numberOfEngines != 2 && numberOfEngines != 4 && numberOfEngines != 6) return;
@@ -34,15 +34,17 @@ public class DrawingEngines implements IDrawingObjectDop {
                 break;
         }
     }
+
     @Override
-    public void drawEngine(Graphics2D g, int startPosX, int startPosY, int yOffset, Color bodyColor){
+    public void drawEngine(Graphics2D g, int startPosX, int startPosY, int yOffset, Color bodyColor) {
         g.setColor(bodyColor);
-        g.fillRect(startPosX + 45, startPosY + 40 + yOffset, 5, 5);
+        g.fillOval(startPosX + 45, startPosY + 40 + yOffset, 5, 5);
         g.setColor(Color.BLACK);
-        g.drawRect(startPosX + 45, startPosY + 40 + yOffset, 5, 5);
+        g.drawOval(startPosX + 45, startPosY + 40 + yOffset, 5, 5);
     }
+
     @Override
-    public void drawEngines(Graphics2D g, int startPosX, int startPosY, Color bodyColor){
+    public void drawEngines(Graphics2D g, int startPosX, int startPosY, Color bodyColor) {
         if (engines == null) return;
         
         switch (engines) {
@@ -58,4 +60,5 @@ public class DrawingEngines implements IDrawingObjectDop {
                 break;
         }
     }
+    
 }

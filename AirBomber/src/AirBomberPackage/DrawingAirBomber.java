@@ -10,22 +10,48 @@ import java.util.Random;
  * @author Андрей
  */
 public class DrawingAirBomber {
-    private EntityAirBomber AirBomber;
-    public DrawingEngines drawingEngines;
-    public float _startPosX;
-    public float _startPosY;
+    protected EntityAirBomber AirBomber;
+    public IDrawingObjectDop drawingEngines;
+    public int _startPosX;
+    public int _startPosY;
     private Integer _pictureWidth = null;
     private Integer _pictureHeight = null;
-    private static final int _airBomberWidth = 110;
-    private static final int _airBomberHeight = 100;
+    private int _airBomberWidth = 110;
+    private int _airBomberHeight = 100;
     
-    public void Init(int speed, float weight, Color bodyColor, int numberOfEngines){
-        AirBomber = new EntityAirBomber();
-        drawingEngines = new DrawingEngines();
-        AirBomber.Init(speed, weight, bodyColor);
-        System.out.println(numberOfEngines + "");
+    public DrawingAirBomber(int speed, float weight, Color bodyColor, int numberOfEngines, EnginesType enginesType){
+        AirBomber = new EntityAirBomber(speed, weight, bodyColor);
+        switch (enginesType) {
+            case RECTANGLE:
+                drawingEngines = new DrawingEngines();
+                break;
+            case TRIANGLE:
+                drawingEngines = new DrawingEnginesTriangle();
+                break;
+            case OVAL:
+                drawingEngines = new DrawingEnginesOval();
+                break;
+            default:
+                throw new AssertionError();
+        }
         drawingEngines.setNumberOfEngines(numberOfEngines);
     }
+    
+    /// <summary>
+    /// Инициализация свойств
+    /// </summary>
+    /// <param name="speed">Скорость</param>
+    /// <param name="weight">Вес бомбардировщика</param>
+    /// <param name="bodyColor">Цвет корпуса</param>
+    /// <param name="carWidth">Ширина отрисовки бомбардировщика</param>
+    /// <param name="carHeight">Высота отрисовки бомбардировщика</param>
+    protected DrawingAirBomber(int speed, float weight, Color bodyColor, int numberOfEngines, EnginesType enginesType, int airBomberWidth, int airBomberHeight)
+    {
+        this(speed, weight, bodyColor, numberOfEngines, enginesType);
+        this._airBomberWidth = airBomberWidth;
+        this._airBomberHeight = airBomberHeight;
+    }
+
 
     public EntityAirBomber getAirBomber() {
         return AirBomber;
@@ -200,6 +226,16 @@ public class DrawingAirBomber {
         g.drawPolygon(rightTailX, rightTailY, rightTailX.length);
         g.drawPolygon(leftTailX, leftTailY, leftTailX.length);
         g.drawLine(_startPosXInt, _startPosYInt + 50, _startPosXInt + 5, _startPosYInt + 50);  
+    }
+    
+    public float [] GetCurrentPosition()
+    {
+        float[] pos = new float[4];
+        pos[0] = _startPosX;
+        pos[1] = _startPosY;
+        pos[2] = _startPosX + _airBomberWidth;
+        pos[3] = _startPosY + _airBomberHeight;
+        return pos;
     }
     
     public void ChangeBorders(int width, int height)

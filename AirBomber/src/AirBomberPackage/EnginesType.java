@@ -8,10 +8,8 @@ package AirBomberPackage;
  *
  * @author Андрей
  */
-public enum Direction {
-    NONE,
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT
+public enum EnginesType {
+    RECTANGLE,
+    TRIANGLE,
+    OVAL
 }

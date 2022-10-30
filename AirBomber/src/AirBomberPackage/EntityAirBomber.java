@@ -31,9 +31,7 @@ public class EntityAirBomber {
         return BodyColor;
     }
     
-    
-    
-    public void Init(int speed, float weight, Color bodyColor){
+    public EntityAirBomber(int speed, float weight, Color bodyColor){
        Random rnd = new Random();
        Speed = speed <= 0 ? rnd.nextInt(50, 150) : speed;
        Weight = weight <= 0 ? rnd.nextInt(40, 70) : weight;

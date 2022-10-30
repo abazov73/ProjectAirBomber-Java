@@ -4,20 +4,21 @@
  */
 package AirBomberPackage;
 
-import java.awt.Graphics2D;
 import java.awt.Color;
+import java.awt.Graphics2D;
 
 /**
  *
  * @author Андрей
  */
-public class DrawingEngines implements IDrawingObjectDop {
+public class DrawingEnginesTriangle implements IDrawingObjectDop {
     private Engines engines = null;
     private int numberOfEngines;
     @Override
     public int getNumberOfEngines() {
         return numberOfEngines;
     }
+
     @Override
     public void setNumberOfEngines(int numberOfEngines) {
         if (numberOfEngines != 2 && numberOfEngines != 4 && numberOfEngines != 6) return;
@@ -34,15 +35,27 @@ public class DrawingEngines implements IDrawingObjectDop {
                 break;
         }
     }
+
     @Override
-    public void drawEngine(Graphics2D g, int startPosX, int startPosY, int yOffset, Color bodyColor){
+    public void drawEngine(Graphics2D g, int startPosX, int startPosY, int yOffset, Color bodyColor) {
         g.setColor(bodyColor);
-        g.fillRect(startPosX + 45, startPosY + 40 + yOffset, 5, 5);
+        int[] engineX = {
+            startPosX + 45,
+            startPosX + 50,
+            startPosX + 50,
+        };
+        int[] engineY = {
+            startPosY + 42 + yOffset,
+            startPosY + 38 + yOffset,
+            startPosY + 46 + yOffset,
+        };
+        g.fillPolygon(engineX, engineY, engineX.length);
         g.setColor(Color.BLACK);
-        g.drawRect(startPosX + 45, startPosY + 40 + yOffset, 5, 5);
+        g.drawPolygon(engineX, engineY, engineX.length);
     }
+
     @Override
-    public void drawEngines(Graphics2D g, int startPosX, int startPosY, Color bodyColor){
+    public void drawEngines(Graphics2D g, int startPosX, int startPosY, Color bodyColor) {
         if (engines == null) return;
         
         switch (engines) {
