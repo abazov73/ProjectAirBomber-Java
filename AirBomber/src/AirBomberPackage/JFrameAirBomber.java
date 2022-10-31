@@ -5,23 +5,26 @@
 package AirBomberPackage;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.util.Random;
 
 /**
  *
  * @author Андрей
  */
-public class JFrameAirBomber extends javax.swing.JFrame {
+public class JFrameAirBomber extends javax.swing.JDialog {
 
     /**
      * Creates new form JFrameAirBomber
      */
-    public JFrameAirBomber() {
+    public JFrameAirBomber(JFrame parent) {
+        super(parent, "Бомбардировщик", true);
         initComponents();
     }
     
     private DrawingAirBomber _airBomber;
     private EnginesType enginesType = EnginesType.RECTANGLE;
+    private DrawingAirBomber _airBomberResult;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -44,11 +47,11 @@ public class JFrameAirBomber extends javax.swing.JFrame {
         ModifyButton = new javax.swing.JButton();
         jLabelEngines1 = new javax.swing.JLabel();
         jComboBoxEnginesType = new javax.swing.JComboBox<>();
+        buttonSelect = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Бомбардировщик");
         setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
-        setPreferredSize(new java.awt.Dimension(700, 400));
         setSize(new java.awt.Dimension(700, 400));
 
         createAirBomberButton.setText("Создать");
@@ -135,6 +138,13 @@ public class JFrameAirBomber extends javax.swing.JFrame {
             }
         });
 
+        buttonSelect.setText("Выбрать");
+        buttonSelect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonSelectActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -154,7 +164,9 @@ public class JFrameAirBomber extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(createAirBomberButton)
                         .addGap(18, 18, 18)
-                        .addComponent(ModifyButton)))
+                        .addComponent(ModifyButton)
+                        .addGap(18, 18, 18)
+                        .addComponent(buttonSelect)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(upButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -183,7 +195,8 @@ public class JFrameAirBomber extends javax.swing.JFrame {
                             .addComponent(jComboBoxEnginesType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(createAirBomberButton, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
+                            .addComponent(createAirBomberButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(buttonSelect, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
                             .addComponent(ModifyButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(upButton, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -201,7 +214,9 @@ public class JFrameAirBomber extends javax.swing.JFrame {
 
     private void createAirBomberButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createAirBomberButtonActionPerformed
         Random rnd = new Random();
-        _airBomber = new DrawingAirBomber(rnd.nextInt(100, 300), rnd.nextInt(1000, 2000), new Color(rnd.nextInt(0, 256), rnd.nextInt(0, 256), rnd.nextInt(0, 256)), (jComboBoxEngines.getSelectedIndex() + 1) * 2, enginesType);
+        Color chosenColor = JColorChooser.showDialog(this, "Вибирете цвет", Color.BLACK);
+        _airBomber = new DrawingAirBomber(rnd.nextInt(100, 300), rnd.nextInt(1000, 2000), chosenColor, (jComboBoxEngines.getSelectedIndex() + 1) * 2, enginesType);
+        SetData();
         Draw();
     }//GEN-LAST:event_createAirBomberButtonActionPerformed
 
@@ -233,11 +248,13 @@ public class JFrameAirBomber extends javax.swing.JFrame {
 
     private void ModifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifyButtonActionPerformed
         Random rnd = new Random();
+        Color chosenColor = JColorChooser.showDialog(this, "Вибирете цвет", Color.BLACK);
+        Color chosenDopColor = JColorChooser.showDialog(this, "Вибирете цвет", Color.BLACK);
         _airBomber = new DrawingHeavyAirBomber(rnd.nextInt(100, 300), rnd.nextInt(1000, 2000),
-            new Color(rnd.nextInt(0, 256), rnd.nextInt(0, 256), rnd.nextInt(0, 256)),
+            chosenColor,
             (jComboBoxEngines.getSelectedIndex() + 1) * 2,
             enginesType,
-            new Color(rnd.nextInt(0, 256), rnd.nextInt(0, 256), rnd.nextInt(0, 256)),
+            chosenDopColor,
             rnd.nextBoolean(), rnd.nextBoolean(), rnd.nextBoolean());
         SetData();
         Draw();
@@ -258,6 +275,11 @@ public class JFrameAirBomber extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jComboBoxEnginesTypeItemStateChanged
 
+    private void buttonSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSelectActionPerformed
+        _airBomberResult = _airBomber;
+        dispose();
+    }//GEN-LAST:event_buttonSelectActionPerformed
+
     private void SetData()
     {
         Random rnd = new Random();
@@ -268,6 +290,11 @@ public class JFrameAirBomber extends javax.swing.JFrame {
     
     private void Draw(){
         airBomberCanvas.repaint();
+    }
+    
+    public DrawingAirBomber run(){
+        setVisible(true);
+        return _airBomberResult;
     }
     
     /**
@@ -300,7 +327,7 @@ public class JFrameAirBomber extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new JFrameMap().setVisible(true);
+                new JFrameDopGenerics().setVisible(true);
             }
         });
     }
@@ -308,6 +335,7 @@ public class JFrameAirBomber extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ModifyButton;
     private AirBomberPackage.CanvasMy airBomberCanvas;
+    private javax.swing.JButton buttonSelect;
     private javax.swing.JButton createAirBomberButton;
     private javax.swing.JButton downButton;
     private javax.swing.JComboBox<String> jComboBoxEngines;
