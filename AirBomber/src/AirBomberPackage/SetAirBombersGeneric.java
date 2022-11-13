@@ -4,6 +4,8 @@
  */
 package AirBomberPackage;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Андрей
@@ -12,19 +14,23 @@ public class SetAirBombersGeneric<T> {
     /// <summary>
     /// Массив объектов, которые храним
     /// </summary>
-    private T[] _places;
+    private ArrayList<T> _places;
     /// <summary>
     /// Количество объектов в массиве
     /// </summary>
-    public int Count;
+    private int _maxCount;
     /// <summary>
     /// Конструктор
     /// </summary>
     /// <param name="count"></param>
     public SetAirBombersGeneric(int count)
     {
-        _places = (T[]) new Object[count];
-        Count = count;
+        _places = new ArrayList<T>(count);
+        _maxCount = count;
+    }
+    
+    public int getCount(){
+        return _places.size();
     }
     /// <summary>
     /// Добавление объекта в набор
@@ -43,30 +49,11 @@ public class SetAirBombersGeneric<T> {
     /// <returns></returns>
     public int Insert(T airBomber, int position)
     {
-        if (position >= _places.length)
+        if (position < 0 || position >= _maxCount)
         {
             return -1;
         }
-        if (_places[position] != null)
-        {
-            int indexNull = -1;
-            for (int i = position; i < _places.length; i++)
-            {
-                if (_places[i] == null)
-                {
-                    indexNull = i;
-                    break;
-                }
-            }
-            if (indexNull == -1) return -1;
-            for (int i = indexNull; i > position; i--)
-            {
-                T tmp = _places[i];
-                _places[i] = _places[i - 1];
-                _places[i - 1] = tmp;
-            }
-        }
-        _places[position] = airBomber;
+        _places.add(position, airBomber);
         return position;
     }
     /// <summary>
@@ -76,12 +63,12 @@ public class SetAirBombersGeneric<T> {
     /// <returns></returns>
     public T Remove(int position)
     {
-        if (position >= _places.length)
+        if (position <0 || position >= _maxCount)
         {
             return null;
-        }
-        T removedObject = _places[position];
-        _places[position] = null;
+        } 
+        T removedObject = _places.get(position);
+        _places.remove(position);
         return removedObject;
     }
     /// <summary>
@@ -91,10 +78,18 @@ public class SetAirBombersGeneric<T> {
     /// <returns></returns>
     public T Get(int position)
     {
-        if (position >= _places.length)
+        if (position >= _maxCount || position < 0)
         {
             return null;
         }
-        return _places[position];
+        return _places.get(position);
+    }
+    
+    public void Set(int position, T value){
+        if (position >= _maxCount || position < 0)
+        {
+            return;
+        }
+        _places.set(position, value);
     }
 }

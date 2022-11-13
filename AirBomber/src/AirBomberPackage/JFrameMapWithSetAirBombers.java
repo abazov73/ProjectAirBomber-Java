@@ -4,7 +4,11 @@
  */
 package AirBomberPackage;
 import java.awt.*;
+import javax.swing.DefaultListModel;
+import java.util.HashMap;
+import java.util.LinkedList;
 import javax.swing.*;
+
 /**
  *
  * @author Андрей
@@ -16,8 +20,22 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
      */
     public JFrameMapWithSetAirBombers() {
         initComponents();
+        _mapsDict.put("Простая карта", new SimpleMap());
+        _mapsDict.put("Городская карта", new CityMap());
+        _mapsDict.put("Линейная карта", new LineMap());
+        _mapsCollection = new MapsCollection(airBomberCanvas.getWidth(),airBomberCanvas.getHeight());
+        DefaultComboBoxModel defaultcombModel = new DefaultComboBoxModel();
+        comboBoxSelectorMap.setModel(defaultcombModel);
+        for (var elem : _mapsDict.keySet()){
+            comboBoxSelectorMap.addItem(elem);
+        }
+        comboBoxSelectorMap.setSelectedIndex(-1);
     }
-    private MapWithSetAirBombersGeneric<DrawingObjectAirBomber, AbstractMap> _mapAirBombersCollectionGeneric;
+    private HashMap<String, AbstractMap> _mapsDict = new HashMap<>();
+    
+    private MapsCollection _mapsCollection;
+    
+    private LinkedList<DrawingObjectAirBomber> deletedAirBombers = new LinkedList<>();
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -40,16 +58,15 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
         rightButton = new javax.swing.JButton();
         upButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        textBoxNewMapName = new javax.swing.JTextField();
+        buttonAddMap = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        listBoxMaps = new javax.swing.JList<>();
+        buttonDeleteMap = new javax.swing.JButton();
+        buttonShowDeleted = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        comboBoxSelectorMap.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Простая карта", "Городская карта", "Линейная карта" }));
-        comboBoxSelectorMap.setSelectedIndex(-1);
-        comboBoxSelectorMap.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                comboBoxSelectorMapItemStateChanged(evt);
-            }
-        });
 
         buttonAddAirBomber.setText("Добавить бомбардировщик");
         buttonAddAirBomber.setToolTipText("");
@@ -134,24 +151,63 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
 
         jLabel1.setText("Инструменты");
 
+        jLabel2.setText("Карты");
+
+        buttonAddMap.setText("Добавить карту");
+        buttonAddMap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonAddMapActionPerformed(evt);
+            }
+        });
+
+        listBoxMaps.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listBoxMaps.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                listBoxMapsValueChanged(evt);
+            }
+        });
+        jScrollPane1.setViewportView(listBoxMaps);
+
+        buttonDeleteMap.setText("Удалить карту");
+        buttonDeleteMap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonDeleteMapActionPerformed(evt);
+            }
+        });
+
+        buttonShowDeleted.setText("Показать удалённый");
+        buttonShowDeleted.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonShowDeletedActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(airBomberCanvas, javax.swing.GroupLayout.PREFERRED_SIZE, 664, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(comboBoxSelectorMap, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(buttonAddAirBomber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(maskedTextBoxPosition)
-                                .addComponent(buttonRemoveAirBomber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(buttonShowStorage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(buttonShowOnMap, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jLabel1))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(buttonDeleteMap, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(buttonAddAirBomber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(maskedTextBoxPosition)
+                                    .addComponent(buttonRemoveAirBomber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(buttonShowStorage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(buttonShowOnMap, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(buttonAddMap, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(comboBoxSelectorMap, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(textBoxNewMapName, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(buttonShowDeleted, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel1)))
                         .addGap(23, 23, 23))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(leftButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -171,18 +227,30 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(textBoxNewMapName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(comboBoxSelectorMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(60, 60, 60)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonAddMap, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonDeleteMap, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addComponent(buttonShowDeleted, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonAddAirBomber)
-                .addGap(38, 38, 38)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(maskedTextBoxPosition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonRemoveAirBomber)
-                .addGap(96, 96, 96)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonShowStorage)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonShowOnMap)
-                .addGap(108, 108, 108)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(upButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -213,50 +281,22 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
             dir = Direction.RIGHT;
             break;
         }
-        airBomberCanvas.getGraphics().drawImage(_mapAirBombersCollectionGeneric.MoveObject(dir), 0, 0, null);
+        airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).MoveObject(dir), 0, 0, null);
     }//GEN-LAST:event_moveButtonActionPerformed
 
-    private void comboBoxSelectorMapItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboBoxSelectorMapItemStateChanged
-        AbstractMap map = null;
-        switch (comboBoxSelectorMap.getSelectedIndex())
-        {
-            case 0:
-                map = new SimpleMap();
-                break;
-            case 1:
-                map = new CityMap();
-                break;
-            case 2:
-                map = new LineMap();
-                break;
-        }
-        if (map != null)
-        {
-            _mapAirBombersCollectionGeneric = new MapWithSetAirBombersGeneric<DrawingObjectAirBomber, AbstractMap>(
-               airBomberCanvas.getWidth(), airBomberCanvas.getHeight(), map);
-            airBomberCanvas.getGraphics().drawImage(_mapAirBombersCollectionGeneric.ShowSet(), 0, 0, null);
-        }
-        else
-        {
-            _mapAirBombersCollectionGeneric = null;
-        }
-    }//GEN-LAST:event_comboBoxSelectorMapItemStateChanged
-
     private void buttonAddAirBomberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddAirBomberActionPerformed
-        if (_mapAirBombersCollectionGeneric == null)
-        {
+        if (listBoxMaps.getSelectedIndex() == -1){
             return;
         }
-        
         JFrameAirBomber form = new JFrameAirBomber(this);
         DrawingAirBomber selectedAirBomber = form.run();
         if (selectedAirBomber != null)
         {
             DrawingObjectAirBomber objectAirBomber = new DrawingObjectAirBomber(selectedAirBomber);
-            if (_mapAirBombersCollectionGeneric.add(objectAirBomber) != -1)
+            if (_mapsCollection.Get(listBoxMaps.getSelectedValue()).add(objectAirBomber) != -1)
             {
                 JOptionPane.showMessageDialog(this, "Объект добавлен");
-                airBomberCanvas.getGraphics().drawImage(_mapAirBombersCollectionGeneric.ShowSet(), 0, 0, null);
+                airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowSet(), 0, 0, null);
             }
             else
             {
@@ -266,6 +306,9 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonAddAirBomberActionPerformed
 
     private void buttonRemoveAirBomberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRemoveAirBomberActionPerformed
+        if (listBoxMaps.getSelectedIndex() == -1){
+            return;
+        }
         if (maskedTextBoxPosition.getText().isBlank() || maskedTextBoxPosition.getText().isEmpty())
         {
             return;
@@ -276,10 +319,12 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
             return;
         }
         int pos = Integer.parseInt(maskedTextBoxPosition.getText());
-        if (_mapAirBombersCollectionGeneric.remove(pos) != null)
+        DrawingObjectAirBomber deletedAirBomber = _mapsCollection.Get(listBoxMaps.getSelectedValue()).remove(pos);
+        if (deletedAirBomber != null)
         {
+            deletedAirBombers.add(deletedAirBomber);
             JOptionPane.showMessageDialog(null,"Объект удален");
-            airBomberCanvas.getGraphics().drawImage(_mapAirBombersCollectionGeneric.ShowSet(), 0, 0, null);
+            airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowSet(), 0, 0, null);
         }
         else
         {
@@ -288,21 +333,78 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonRemoveAirBomberActionPerformed
 
     private void buttonShowStorageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonShowStorageActionPerformed
-        if (_mapAirBombersCollectionGeneric == null)
-        {
+        if (listBoxMaps.getSelectedIndex() == -1){
             return;
         }
-        airBomberCanvas.getGraphics().drawImage(_mapAirBombersCollectionGeneric.ShowSet(), 0, 0, null);
+        airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowSet(), 0, 0, null);
     }//GEN-LAST:event_buttonShowStorageActionPerformed
 
     private void buttonShowOnMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonShowOnMapActionPerformed
-        if (_mapAirBombersCollectionGeneric == null)
-        {
+        if (listBoxMaps.getSelectedIndex() == -1){
             return;
         }
-        airBomberCanvas.getGraphics().drawImage(_mapAirBombersCollectionGeneric.ShowOnMap(), 0, 0, null);
+        airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowOnMap(), 0, 0, null);
     }//GEN-LAST:event_buttonShowOnMapActionPerformed
+
+    private void buttonAddMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddMapActionPerformed
+        if (comboBoxSelectorMap.getSelectedIndex() == -1 || textBoxNewMapName.getText().isBlank()){
+            JOptionPane.showMessageDialog(this, "Не все данные заполнены!");
+            return;
+        }
+        if (!_mapsDict.containsKey((String) comboBoxSelectorMap.getSelectedItem())){
+            JOptionPane.showMessageDialog(this, "Нет такой карты!");
+            return;
+        }
+        _mapsCollection.AddMap(textBoxNewMapName.getText(), _mapsDict.get((String) comboBoxSelectorMap.getSelectedItem()));
+        ReloadMaps();
+    }//GEN-LAST:event_buttonAddMapActionPerformed
+
+    private void buttonDeleteMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteMapActionPerformed
+        if (listBoxMaps.getSelectedIndex() == -1){
+            return;
+        }
+        if (JOptionPane.showConfirmDialog(this, (Object) ("Удалить карту " + listBoxMaps.getSelectedValue() + "?") , "Удаление", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
+            _mapsCollection.DelMap(listBoxMaps.getSelectedValue());
+            ReloadMaps();
+        }
+    }//GEN-LAST:event_buttonDeleteMapActionPerformed
+
+    private void buttonShowDeletedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonShowDeletedActionPerformed
+        if (deletedAirBombers.isEmpty()){
+            return;
+        }
+        JFrameAirBomber form = new JFrameAirBomber(this, deletedAirBombers.poll());
+        form.run();
+    }//GEN-LAST:event_buttonShowDeletedActionPerformed
+
+    private void listBoxMapsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listBoxMapsValueChanged
+        if (listBoxMaps.getSelectedIndex() == -1){
+            return;
+        }
+        airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowSet(), 0, 0, null);
+    }//GEN-LAST:event_listBoxMapsValueChanged
  
+    private void ReloadMaps()
+    {
+        int index = listBoxMaps.getSelectedIndex();
+
+        DefaultListModel listBoxMapsModel = new DefaultListModel();
+        listBoxMapsModel.clear();
+        for (int i = 0; i < _mapsCollection.getKeys().size(); i++)
+        {
+            listBoxMapsModel.addElement(_mapsCollection.getKeys().get(i));
+        }
+        listBoxMaps.setModel(listBoxMapsModel);
+        if (listBoxMapsModel.size() > 0 && (index == -1 || index >= listBoxMapsModel.size()))
+        {
+            listBoxMaps.setSelectedIndex(0);
+        }
+        else if (listBoxMapsModel.size() > 0 && index > -1 && index < listBoxMapsModel.size())
+        {
+            listBoxMaps.setSelectedIndex(index);
+        }
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -341,15 +443,22 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private AirBomberPackage.CanvasMy airBomberCanvas;
     private javax.swing.JButton buttonAddAirBomber;
+    private javax.swing.JButton buttonAddMap;
+    private javax.swing.JButton buttonDeleteMap;
     private javax.swing.JButton buttonRemoveAirBomber;
+    private javax.swing.JButton buttonShowDeleted;
     private javax.swing.JButton buttonShowOnMap;
     private javax.swing.JButton buttonShowStorage;
     private javax.swing.JComboBox<String> comboBoxSelectorMap;
     private javax.swing.JButton downButton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton leftButton;
+    private javax.swing.JList<String> listBoxMaps;
     private javax.swing.JFormattedTextField maskedTextBoxPosition;
     private javax.swing.JButton rightButton;
+    private javax.swing.JTextField textBoxNewMapName;
     private javax.swing.JButton upButton;
     // End of variables declaration//GEN-END:variables
 }

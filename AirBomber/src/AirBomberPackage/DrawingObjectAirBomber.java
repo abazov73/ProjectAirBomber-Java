@@ -40,6 +40,10 @@ public class DrawingObjectAirBomber implements IDrawingObject {
         _airBomber.SetPosition(x, y, width, height);
     }
     
+    public DrawingAirBomber getAirBomber(){
+        return _airBomber;
+    }
+    
     @Override
     public void DrawingObject(Graphics2D g)
     {

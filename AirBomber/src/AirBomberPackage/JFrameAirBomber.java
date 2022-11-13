@@ -5,7 +5,6 @@
 package AirBomberPackage;
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.JOptionPane;
 import java.util.Random;
 
 /**
@@ -20,6 +19,14 @@ public class JFrameAirBomber extends javax.swing.JDialog {
     public JFrameAirBomber(JFrame parent) {
         super(parent, "Бомбардировщик", true);
         initComponents();
+    }
+    
+    public JFrameAirBomber(JFrame parent, DrawingObjectAirBomber airBomber) {
+        super(parent, "Бомбардировщик", true);
+        initComponents();
+        _airBomber = airBomber.getAirBomber();
+        SetData();
+        Draw();
     }
     
     private DrawingAirBomber _airBomber;
@@ -327,7 +334,7 @@ public class JFrameAirBomber extends javax.swing.JDialog {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new JFrameDopGenerics().setVisible(true);
+                new JFrameMapWithSetAirBombers().setVisible(true);
             }
         });
     }

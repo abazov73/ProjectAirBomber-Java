@@ -26,6 +26,10 @@ public class MapWithSetAirBombersGeneric <T extends IDrawingObject, U extends Ab
         _map = map;
     }
     
+    public SetAirBombersGeneric<T> getSetAirBombers(){
+        return _setAirBombers;
+    }
+    
     public int add(T airBomber){
         return _setAirBombers.Insert(airBomber);
     }
@@ -46,7 +50,7 @@ public class MapWithSetAirBombersGeneric <T extends IDrawingObject, U extends Ab
     public BufferedImage ShowOnMap()
     {
         Shaking();
-        for (int i = 0; i < _setAirBombers.Count; i++)
+        for (int i = 0; i < _setAirBombers.getCount(); i++)
         {
             var airBomber = _setAirBombers.Get(i);
             if (airBomber != null)
@@ -68,8 +72,8 @@ public class MapWithSetAirBombersGeneric <T extends IDrawingObject, U extends Ab
     
     private void Shaking()
     {
-        int j = _setAirBombers.Count - 1;
-        for (int i = 0; i < _setAirBombers.Count; i++)
+        int j = _setAirBombers.getCount() - 1;
+        for (int i = 0; i < _setAirBombers.getCount(); i++)
         {
             if (_setAirBombers.Get(i) == null)
             {
@@ -112,7 +116,7 @@ public class MapWithSetAirBombersGeneric <T extends IDrawingObject, U extends Ab
     private void DrawAirBombers(Graphics2D g)
     {
         int numOfObjectsInRow = _pictureWidth / _placeSizeWidth;
-        for (int i = 0; i < _setAirBombers.Count; i++)
+        for (int i = 0; i < _setAirBombers.getCount(); i++)
         {
             if (_setAirBombers.Get(i) != null){
                 _setAirBombers.Get(i).SetObject((numOfObjectsInRow - (i % numOfObjectsInRow) - 1) * _placeSizeWidth, (i / numOfObjectsInRow) * _placeSizeHeight, _pictureWidth, _pictureHeight);
