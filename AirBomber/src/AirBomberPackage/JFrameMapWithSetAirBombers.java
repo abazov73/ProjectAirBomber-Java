@@ -288,21 +288,10 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
         if (listBoxMaps.getSelectedIndex() == -1){
             return;
         }
-        JFrameAirBomber form = new JFrameAirBomber(this);
-        DrawingAirBomber selectedAirBomber = form.run();
-        if (selectedAirBomber != null)
-        {
-            DrawingObjectAirBomber objectAirBomber = new DrawingObjectAirBomber(selectedAirBomber);
-            if (_mapsCollection.Get(listBoxMaps.getSelectedValue()).add(objectAirBomber) != -1)
-            {
-                JOptionPane.showMessageDialog(this, "Объект добавлен");
-                airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowSet(), 0, 0, null);
-            }
-            else
-            {
-                 JOptionPane.showMessageDialog(this, "Не удалось добавить объект");
-            }
-        }
+        JFrameAirBomberConfig airBomberConfig = new JFrameAirBomberConfig();
+        airBomberConfig.addEvent(airBomber -> {_mapsCollection.Get(listBoxMaps.getSelectedValue()).add(new DrawingObjectAirBomber(airBomber));
+        airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowSet(), 0, 0, null);});
+        airBomberConfig.setVisible(true);
     }//GEN-LAST:event_buttonAddAirBomberActionPerformed
 
     private void buttonRemoveAirBomberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRemoveAirBomberActionPerformed

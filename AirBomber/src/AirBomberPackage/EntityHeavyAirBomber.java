@@ -42,6 +42,10 @@ public class EntityHeavyAirBomber extends EntityAirBomber {
         return tailLine;
     }
     
+    public void setDopColor(Color newColor){
+        DopColor = newColor;
+    }
+    
     /// <summary>
     /// Инициализация свойств
     /// </summary>

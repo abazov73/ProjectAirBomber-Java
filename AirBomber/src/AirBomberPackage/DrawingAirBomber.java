@@ -238,6 +238,10 @@ public class DrawingAirBomber {
         return pos;
     }
     
+    public void setEngines(IDrawingObjectDop newEngines){
+        drawingEngines = newEngines;
+    }
+    
     public void ChangeBorders(int width, int height)
     {
         _pictureWidth = width;
