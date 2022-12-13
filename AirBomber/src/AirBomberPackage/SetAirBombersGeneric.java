@@ -92,4 +92,21 @@ public class SetAirBombersGeneric<T> {
         }
         _places.set(position, value);
     }
+    
+    public ArrayList<T> GetAirBombers(){
+        ArrayList<T> notNullAirBombers = new ArrayList<>();
+        for(var airBomber : _places){
+            if (airBomber != null){
+                notNullAirBombers.add(airBomber);
+            }
+            else{
+                break;
+            }
+        }
+        return  notNullAirBombers;
+    }
+    
+    public void clear(){
+        _places.clear();
+    }
 }

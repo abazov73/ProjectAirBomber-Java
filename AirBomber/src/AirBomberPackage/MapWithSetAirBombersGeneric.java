@@ -70,6 +70,32 @@ public class MapWithSetAirBombersGeneric <T extends IDrawingObject, U extends Ab
         return new BufferedImage(_pictureWidth, _pictureHeight, BufferedImage.TYPE_INT_ARGB);
     }
     
+    /// <summary>
+    /// Получение данных в виде строки
+    /// </summary>
+    /// <param name="sep"></param>
+    /// <returns></returns>
+    public String GetData(String separatorType, String separatorData)
+    {
+        String data = _map.getClass().getSimpleName() + separatorType;
+        for (var airBomber : _setAirBombers.GetAirBombers())
+        {
+            data += airBomber.GetInfo() + separatorData;
+        }
+        return data;
+    }
+    public void LoadData(String[] records)
+    {
+        for (var rec : records)
+        {
+            _setAirBombers.Insert((T) DrawingObjectAirBomber.Create(rec));
+        }
+    }
+    
+    public void clearStorage(){
+        _setAirBombers.clear();
+    }
+    
     private void Shaking()
     {
         int j = _setAirBombers.getCount() - 1;

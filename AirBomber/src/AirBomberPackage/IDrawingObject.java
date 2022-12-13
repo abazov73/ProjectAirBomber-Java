@@ -37,4 +37,6 @@ public interface IDrawingObject {
     /// </summary>
     /// <returns></returns>
     float[] GetCurrentPosition();
+    
+    String GetInfo();
 }

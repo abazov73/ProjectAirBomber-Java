@@ -57,4 +57,14 @@ public class DrawingObjectAirBomber implements IDrawingObject {
             _airBomber.DrawTransport(g);
         }
     }
+
+    @Override
+    public String GetInfo() {
+        if (_airBomber != null) return ExtentionAirBomber.ExtentionedAirBomber.GetDataForSave(_airBomber);
+        else return "";
+    }
+    
+    public static IDrawingObject Create(String data){
+        return new DrawingObjectAirBomber(ExtentionAirBomber.ExtentionedAirBomber.CreateDrawningAirBomber(data));
+    }
 }

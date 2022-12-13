@@ -46,6 +46,7 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jFileChooser1 = new javax.swing.JFileChooser();
         airBomberCanvas = new AirBomberPackage.CanvasMy();
         comboBoxSelectorMap = new javax.swing.JComboBox<>();
         buttonAddAirBomber = new javax.swing.JButton();
@@ -65,6 +66,12 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
         listBoxMaps = new javax.swing.JList<>();
         buttonDeleteMap = new javax.swing.JButton();
         buttonShowDeleted = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenuSaveLoad = new javax.swing.JMenu();
+        jMenuItemSave = new javax.swing.JMenuItem();
+        jMenuItemLoad = new javax.swing.JMenuItem();
+        jMenuItemSaveStorage = new javax.swing.JMenuItem();
+        jMenuItemLoadStorage = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -182,6 +189,44 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
             }
         });
 
+        jMenuSaveLoad.setText("File");
+
+        jMenuItemSave.setText("Сохранить");
+        jMenuItemSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemSaveActionPerformed(evt);
+            }
+        });
+        jMenuSaveLoad.add(jMenuItemSave);
+
+        jMenuItemLoad.setText("Загрузить");
+        jMenuItemLoad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemLoadActionPerformed(evt);
+            }
+        });
+        jMenuSaveLoad.add(jMenuItemLoad);
+
+        jMenuItemSaveStorage.setText("Сохранить хранилище");
+        jMenuItemSaveStorage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemSaveStorageActionPerformed(evt);
+            }
+        });
+        jMenuSaveLoad.add(jMenuItemSaveStorage);
+
+        jMenuItemLoadStorage.setText("Загрузить хранилище");
+        jMenuItemLoadStorage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemLoadStorageActionPerformed(evt);
+            }
+        });
+        jMenuSaveLoad.add(jMenuItemLoadStorage);
+
+        jMenuBar1.add(jMenuSaveLoad);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -238,7 +283,7 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonDeleteMap, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
                 .addComponent(buttonShowDeleted, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonAddAirBomber)
@@ -308,7 +353,7 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
             return;
         }
         int pos = Integer.parseInt(maskedTextBoxPosition.getText());
-        DrawingObjectAirBomber deletedAirBomber = _mapsCollection.Get(listBoxMaps.getSelectedValue()).remove(pos);
+        DrawingObjectAirBomber deletedAirBomber = (DrawingObjectAirBomber) _mapsCollection.Get(listBoxMaps.getSelectedValue()).remove(pos);
         if (deletedAirBomber != null)
         {
             deletedAirBombers.add(deletedAirBomber);
@@ -372,6 +417,52 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
         }
         airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowSet(), 0, 0, null);
     }//GEN-LAST:event_listBoxMapsValueChanged
+
+    private void jMenuItemSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveActionPerformed
+        if (jFileChooser1.showDialog(this, "Сохранить") == JFileChooser.APPROVE_OPTION){
+            if (_mapsCollection.SaveData(jFileChooser1.getSelectedFile().getPath())){
+                JOptionPane.showMessageDialog(this, "Cохранено");
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Не сохранилось");
+            }
+        }
+    }//GEN-LAST:event_jMenuItemSaveActionPerformed
+
+    private void jMenuItemLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLoadActionPerformed
+        if (jFileChooser1.showDialog(this, "Загрузить") == JFileChooser.APPROVE_OPTION){
+            if (_mapsCollection.LoadData(jFileChooser1.getSelectedFile().getPath())){
+                JOptionPane.showMessageDialog(this, "Загрузилось");
+                ReloadMaps();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Не загрузилось");
+            }
+        }
+    }//GEN-LAST:event_jMenuItemLoadActionPerformed
+
+    private void jMenuItemSaveStorageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveStorageActionPerformed
+        if (jFileChooser1.showDialog(this, "Сохранить") == JFileChooser.APPROVE_OPTION){
+            if (_mapsCollection.SaveStorage(jFileChooser1.getSelectedFile().getPath(), listBoxMaps.getSelectedValue())){
+                JOptionPane.showMessageDialog(this, "Cохранено");
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Не сохранилось");
+            }
+        }
+    }//GEN-LAST:event_jMenuItemSaveStorageActionPerformed
+
+    private void jMenuItemLoadStorageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLoadStorageActionPerformed
+        if (jFileChooser1.showDialog(this, "Загрузить") == JFileChooser.APPROVE_OPTION){
+            if (_mapsCollection.LoadStorage(jFileChooser1.getSelectedFile().getPath())){
+                JOptionPane.showMessageDialog(this, "Загрузилось");
+                ReloadMaps();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Не загрузилось");
+            }
+        }
+    }//GEN-LAST:event_jMenuItemLoadStorageActionPerformed
  
     private void ReloadMaps()
     {
@@ -440,8 +531,15 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
     private javax.swing.JButton buttonShowStorage;
     private javax.swing.JComboBox<String> comboBoxSelectorMap;
     private javax.swing.JButton downButton;
+    private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItemLoad;
+    private javax.swing.JMenuItem jMenuItemLoadStorage;
+    private javax.swing.JMenuItem jMenuItemSave;
+    private javax.swing.JMenuItem jMenuItemSaveStorage;
+    private javax.swing.JMenu jMenuSaveLoad;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton leftButton;
     private javax.swing.JList<String> listBoxMaps;
