@@ -37,7 +37,7 @@ public class SetAirBombersGeneric<T> {
     /// </summary>
     /// <param name="airBomber">Добавляемый автомобиль</param>
     /// <returns></returns>
-    public int Insert(T airBomber)
+    public int Insert(T airBomber)throws AirBomberNotFoundException, StorageOverflowException, Exception
     {
         return Insert(airBomber, 0);
     }
@@ -47,11 +47,14 @@ public class SetAirBombersGeneric<T> {
     /// <param name="airBomber">Добавляемый автомобиль</param>
     /// <param name="position">Позиция</param>
     /// <returns></returns>
-    public int Insert(T airBomber, int position)
+    public int Insert(T airBomber, int position) throws AirBomberNotFoundException, StorageOverflowException, Exception
     {
-        if (position < 0 || position >= _maxCount)
+        if (position < 0 || position > _maxCount)
         {
-            return -1;
+            throw new AirBomberNotFoundException(position);
+        }
+        if (_places.size() + 1 > _maxCount){
+            throw new StorageOverflowException(_maxCount);
         }
         _places.add(position, airBomber);
         return position;
@@ -61,11 +64,11 @@ public class SetAirBombersGeneric<T> {
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
-    public T Remove(int position)
+    public T Remove(int position) throws AirBomberNotFoundException, Exception
     {
-        if (position <0 || position >= _maxCount)
+        if (position <0 || position > _maxCount)
         {
-            return null;
+            throw new AirBomberNotFoundException(position);
         } 
         T removedObject = _places.get(position);
         _places.remove(position);
@@ -76,7 +79,7 @@ public class SetAirBombersGeneric<T> {
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
-    public T Get(int position)
+    public T Get(int position) 
     {
         if (position >= _maxCount || position < 0)
         {

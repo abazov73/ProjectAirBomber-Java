@@ -30,11 +30,11 @@ public class MapWithSetAirBombersGeneric <T extends IDrawingObject, U extends Ab
         return _setAirBombers;
     }
     
-    public int add(T airBomber){
+    public int add(T airBomber)throws AirBomberNotFoundException, StorageOverflowException, Exception{ 
         return _setAirBombers.Insert(airBomber);
     }
     
-    public T remove(int position){
+    public T remove(int position)throws AirBomberNotFoundException, Exception{
         return _setAirBombers.Remove(position);
     }
     
@@ -47,7 +47,7 @@ public class MapWithSetAirBombersGeneric <T extends IDrawingObject, U extends Ab
         return bmp;
     }
     
-    public BufferedImage ShowOnMap()
+    public BufferedImage ShowOnMap() throws AirBomberNotFoundException, StorageOverflowException, Exception
     {
         Shaking();
         for (int i = 0; i < _setAirBombers.getCount(); i++)
@@ -84,7 +84,7 @@ public class MapWithSetAirBombersGeneric <T extends IDrawingObject, U extends Ab
         }
         return data;
     }
-    public void LoadData(String[] records)
+    public void LoadData(String[] records) throws AirBomberNotFoundException, StorageOverflowException, Exception
     {
         for (var rec : records)
         {
@@ -96,7 +96,7 @@ public class MapWithSetAirBombersGeneric <T extends IDrawingObject, U extends Ab
         _setAirBombers.clear();
     }
     
-    private void Shaking()
+    private void Shaking() throws AirBomberNotFoundException, StorageOverflowException, Exception
     {
         int j = _setAirBombers.getCount() - 1;
         for (int i = 0; i < _setAirBombers.getCount(); i++)

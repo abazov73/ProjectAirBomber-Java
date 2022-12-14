@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <!-- Секция аппендеров -->
+  <Appenders>
+    <!-- Файловый аппендер -->
+    <File name="fileWarnings" fileName="logWarnings.log">
+      <PatternLayout>
+        <Pattern> %m(дата-%d{d.M.y}) %ex%n</Pattern>
+      </PatternLayout>
+    </File>
+
+    <File name="fileInfo" fileName="logInfo.log">
+      <PatternLayout>
+        <Pattern> %m(дата-%d{d.M.y}) %ex%n</Pattern>
+      </PatternLayout>
+      <Filters>
+        <!-- Now deny warn, error and fatal messages -->
+        <ThresholdFilter level="warn"  onMatch="DENY"   onMismatch="NEUTRAL"/>
+
+        <!-- This filter accepts info, warn, error, fatal and denies debug/trace -->
+        <ThresholdFilter level="info"  onMatch="ACCEPT" onMismatch="DENY"/>
+      </Filters>
+    </File>
+  </Appenders>
+  <!-- Секция логгеров -->
+  <Loggers>
+    <Logger name="logger" level="info" additivity="false">
+        <AppenderRef ref="fileInfo" level="INFO"/>
+        <AppenderRef ref="fileWarnings" level="WARN"/>
+    </Logger>
+  </Loggers>
+</Configuration>

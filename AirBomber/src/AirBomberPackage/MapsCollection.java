@@ -6,6 +6,7 @@ package AirBomberPackage;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.io.*;
+import java.nio.file.FileSystemException;
 import javax.swing.*;
 /**
  *
@@ -105,7 +106,7 @@ public class MapsCollection {
     /// </summary>
     /// <param name="filename"></param>
     /// <returns></returns>
-    public boolean LoadData(String filename)
+    public boolean LoadData(String filename) throws AirBomberNotFoundException, StorageOverflowException, Exception
     {
         File loadFile = new File(filename);
         if (!loadFile.exists())
@@ -174,11 +175,11 @@ public class MapsCollection {
         return true;
     }
     
-    public boolean LoadStorage(String filename){
+    public boolean LoadStorage(String filename) throws AirBomberNotFoundException, StorageOverflowException, FileNotFoundException, FileSystemException, Exception{
         File loadFile = new File(filename);
         if (!loadFile.exists())
         {
-            return false;
+            throw new FileNotFoundException(filename);
         }
         
         try{
@@ -186,7 +187,7 @@ public class MapsCollection {
             String line;
             line = br.readLine();
             line.trim();
-            if (!line.equals("Storage")) return false;
+            if (!line.equals("Storage")) throw new FileSystemException("Неверный формат файла!");
             
             String key = br.readLine();
             String mapType = br.readLine();

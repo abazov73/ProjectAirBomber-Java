@@ -8,6 +8,9 @@ import javax.swing.DefaultListModel;
 import java.util.HashMap;
 import java.util.LinkedList;
 import javax.swing.*;
+import org.apache.logging.log4j.*;
+import java.io.*;
+import java.nio.file.FileSystemException;
 
 /**
  *
@@ -20,6 +23,8 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
      */
     public JFrameMapWithSetAirBombers() {
         initComponents();
+        System.setProperty("log4j.configurationFile","C:\\Users\\Андрей\\Documents\\loggerSettings.xml");
+        logger = LogManager.getLogger("logger");
         _mapsDict.put("Простая карта", new SimpleMap());
         _mapsDict.put("Городская карта", new CityMap());
         _mapsDict.put("Линейная карта", new LineMap());
@@ -36,6 +41,8 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
     private MapsCollection _mapsCollection;
     
     private LinkedList<DrawingObjectAirBomber> deletedAirBombers = new LinkedList<>();
+    
+    private Logger logger;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -334,8 +341,25 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
             return;
         }
         JFrameAirBomberConfig airBomberConfig = new JFrameAirBomberConfig();
-        airBomberConfig.addEvent(airBomber -> {_mapsCollection.Get(listBoxMaps.getSelectedValue()).add(new DrawingObjectAirBomber(airBomber));
-        airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowSet(), 0, 0, null);});
+        airBomberConfig.addEvent(airBomber -> {
+            try{
+                _mapsCollection.Get(listBoxMaps.getSelectedValue()).add(new DrawingObjectAirBomber(airBomber));
+                airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowSet(), 0, 0, null);
+                logger.log(Level.INFO, "Добавлен объект " + airBomber);
+            }
+            catch (AirBomberNotFoundException ex){
+                JOptionPane.showMessageDialog(null, ex);
+                logger.log(Level.WARN, "Ошибка: " + ex.getMessage());
+            }
+            catch (StorageOverflowException ex){
+                JOptionPane.showMessageDialog(null, ex);
+                logger.log(Level.WARN, "Ошибка: " + ex.getMessage());
+            }
+            catch (Exception ex){
+                JOptionPane.showMessageDialog(null, ex);
+                logger.log(Level.FATAL, "Ошибка: " + ex.getMessage());
+            }
+        });
         airBomberConfig.setVisible(true);
     }//GEN-LAST:event_buttonAddAirBomberActionPerformed
 
@@ -353,16 +377,20 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
             return;
         }
         int pos = Integer.parseInt(maskedTextBoxPosition.getText());
-        DrawingObjectAirBomber deletedAirBomber = (DrawingObjectAirBomber) _mapsCollection.Get(listBoxMaps.getSelectedValue()).remove(pos);
-        if (deletedAirBomber != null)
-        {
+        try{
+            DrawingObjectAirBomber deletedAirBomber = (DrawingObjectAirBomber) _mapsCollection.Get(listBoxMaps.getSelectedValue()).remove(pos);
             deletedAirBombers.add(deletedAirBomber);
             JOptionPane.showMessageDialog(null,"Объект удален");
             airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowSet(), 0, 0, null);
+            logger.log(Level.INFO, "Удалён объект " + deletedAirBomber);
         }
-        else
-        {
-            JOptionPane.showMessageDialog(null,"Не удалось удалить объект!");
+        catch (AirBomberNotFoundException ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.WARN, "Ошибка: " + ex.getMessage());
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.FATAL, "Ошибка: " + ex.getMessage());
         }
     }//GEN-LAST:event_buttonRemoveAirBomberActionPerformed
 
@@ -377,7 +405,21 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
         if (listBoxMaps.getSelectedIndex() == -1){
             return;
         }
-        airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowOnMap(), 0, 0, null);
+        try{
+            airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowOnMap(), 0, 0, null);
+        }
+        catch (AirBomberNotFoundException ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.WARN, "Ошибка: " + ex.getMessage());
+        }
+        catch (StorageOverflowException ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.WARN, "Ошибка: " + ex.getMessage());
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.FATAL, "Ошибка: " + ex.getMessage());
+        }
     }//GEN-LAST:event_buttonShowOnMapActionPerformed
 
     private void buttonAddMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddMapActionPerformed
@@ -391,15 +433,18 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
         }
         _mapsCollection.AddMap(textBoxNewMapName.getText(), _mapsDict.get((String) comboBoxSelectorMap.getSelectedItem()));
         ReloadMaps();
+        logger.log(Level.INFO, "Добавлна карта " + textBoxNewMapName.getText());
     }//GEN-LAST:event_buttonAddMapActionPerformed
 
     private void buttonDeleteMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDeleteMapActionPerformed
         if (listBoxMaps.getSelectedIndex() == -1){
             return;
         }
+        String name = listBoxMaps.getSelectedValue();
         if (JOptionPane.showConfirmDialog(this, (Object) ("Удалить карту " + listBoxMaps.getSelectedValue() + "?") , "Удаление", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
             _mapsCollection.DelMap(listBoxMaps.getSelectedValue());
             ReloadMaps();
+            logger.log(Level.INFO, "Удалена карта " + name);
         }
     }//GEN-LAST:event_buttonDeleteMapActionPerformed
 
@@ -416,12 +461,14 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
             return;
         }
         airBomberCanvas.getGraphics().drawImage(_mapsCollection.Get(listBoxMaps.getSelectedValue()).ShowSet(), 0, 0, null);
+        logger.log(Level.INFO, "Переход на карту " + listBoxMaps.getSelectedValue());
     }//GEN-LAST:event_listBoxMapsValueChanged
 
     private void jMenuItemSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveActionPerformed
         if (jFileChooser1.showDialog(this, "Сохранить") == JFileChooser.APPROVE_OPTION){
             if (_mapsCollection.SaveData(jFileChooser1.getSelectedFile().getPath())){
                 JOptionPane.showMessageDialog(this, "Cохранено");
+                logger.log(Level.INFO, "Сохранение");
             }
             else{
                 JOptionPane.showMessageDialog(this, "Не сохранилось");
@@ -430,14 +477,37 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemSaveActionPerformed
 
     private void jMenuItemLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLoadActionPerformed
-        if (jFileChooser1.showDialog(this, "Загрузить") == JFileChooser.APPROVE_OPTION){
-            if (_mapsCollection.LoadData(jFileChooser1.getSelectedFile().getPath())){
-                JOptionPane.showMessageDialog(this, "Загрузилось");
-                ReloadMaps();
+        try{
+            if (jFileChooser1.showDialog(this, "Загрузить") == JFileChooser.APPROVE_OPTION){
+                if (_mapsCollection.LoadData(jFileChooser1.getSelectedFile().getPath())){
+                    JOptionPane.showMessageDialog(this, "Загрузилось");
+                    ReloadMaps();
+                    logger.log(Level.INFO, "Загрузка");
+                }
+                else{
+                    JOptionPane.showMessageDialog(this, "Не загрузилось");
+                }
             }
-            else{
-                JOptionPane.showMessageDialog(this, "Не загрузилось");
-            }
+        }
+        catch (AirBomberNotFoundException ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.WARN, "Ошибка: " + ex.getMessage());
+        }
+        catch (StorageOverflowException ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.WARN, "Ошибка: " + ex.getMessage());
+        }
+        catch (FileNotFoundException ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.ERROR, "Ошибка: " + ex.getMessage());
+        }
+        catch (FileSystemException ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.ERROR, "Ошибка: " + ex.getMessage());
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.FATAL, "Ошибка: " + ex.getMessage());
         }
     }//GEN-LAST:event_jMenuItemLoadActionPerformed
 
@@ -453,14 +523,28 @@ public class JFrameMapWithSetAirBombers extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemSaveStorageActionPerformed
 
     private void jMenuItemLoadStorageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLoadStorageActionPerformed
-        if (jFileChooser1.showDialog(this, "Загрузить") == JFileChooser.APPROVE_OPTION){
-            if (_mapsCollection.LoadStorage(jFileChooser1.getSelectedFile().getPath())){
-                JOptionPane.showMessageDialog(this, "Загрузилось");
-                ReloadMaps();
+        try{
+            if (jFileChooser1.showDialog(this, "Загрузить") == JFileChooser.APPROVE_OPTION){
+                if (_mapsCollection.LoadStorage(jFileChooser1.getSelectedFile().getPath())){
+                    JOptionPane.showMessageDialog(this, "Загрузилось");
+                    ReloadMaps();
+                }
+                else{
+                    JOptionPane.showMessageDialog(this, "Не загрузилось");
+                }
             }
-            else{
-                JOptionPane.showMessageDialog(this, "Не загрузилось");
-            }
+        }
+        catch (AirBomberNotFoundException ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.WARN, "Ошибка: " + ex.getMessage());
+        }
+        catch (StorageOverflowException ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.WARN, "Ошибка: " + ex.getMessage());
+        }
+        catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex);
+            logger.log(Level.FATAL, "Ошибка: " + ex.getMessage());    
         }
     }//GEN-LAST:event_jMenuItemLoadStorageActionPerformed
  
